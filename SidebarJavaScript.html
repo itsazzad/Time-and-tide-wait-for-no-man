@@ -1,10 +1,10 @@
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
 	/**
    * Run initializations on sidebar load.
    */
 
-  var data = [];
+  let data = [];
 
   function getDataFromSheet(){
     // Send the value to the server and handle the response.
@@ -40,11 +40,11 @@
       }).withUserObject(this).getInfoData();
     }
     console.log(delay, Math.round(delay/1000/60), {delay, info, time});
-    let myGreeting = setTimeout(playAlarm, delay, {delay, info, time});
+    const myGreeting = setTimeout(playAlarm, delay, {delay, info, time});
   }
 
   function clearAllTimeouts(){
-    var id = window.setTimeout(function() {}, 0);
+    const id = window.setTimeout(function() {}, 0);
     while (id--) {
       window.clearTimeout(id); // will do nothing if no timeout with id is present
     }
