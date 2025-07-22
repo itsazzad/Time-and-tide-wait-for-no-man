@@ -2,6 +2,6 @@
   "timeZone": "Asia/Dhaka",
   "dependencies": {
   },
-  "exceptionLogging": "STACKDRIVER",
+  "exceptionLogging": "CLOUD_LOGGING",
   "runtimeVersion": "V8"
 }

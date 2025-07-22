@@ -36,8 +36,7 @@ function showSidebar() {
 
   var ui = HtmlService.createTemplateFromFile('Sidebar')
     .evaluate()
-    .setTitle(SIDEBAR_TITLE)
-    .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+    .setTitle(SIDEBAR_TITLE);
   SpreadsheetApp.getUi().showSidebar(ui);
 
   // deleteTriggers();
@@ -50,44 +49,45 @@ function showSidebar() {
 function deleteTriggers() {
   Logger.log("deleteTriggers");
   // Loop over all triggers.
-  var allTriggers = ScriptApp.getProjectTriggers();
-  for (var i = 0; i < allTriggers.length; i++) {
-    ScriptApp.deleteTrigger(allTriggers[i]);
+  const allTriggers = ScriptApp.getProjectTriggers();
+  for (const trigger of allTriggers) {
+    ScriptApp.deleteTrigger(trigger);
   }
 }
 
 function getData() {
-  SpreadsheetApp.flush();
+  try {
+    SpreadsheetApp.flush();
 
-  const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  const activeSheet = activeSpreadsheet.getActiveSheet();
+    const activeSpreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    const activeSheet = activeSpreadsheet.getActiveSheet();
 
-  const spreadsheetTimeZone = activeSpreadsheet.getSpreadsheetTimeZone();
-  let spreadsheetLocale = activeSpreadsheet.getSpreadsheetLocale() || 'en-US';
-  spreadsheetLocale = 'en-US';
-  let nowDate = new Date();
+    const spreadsheetTimeZone = activeSpreadsheet.getSpreadsheetTimeZone();
+    let spreadsheetLocale = activeSpreadsheet.getSpreadsheetLocale() || 'en-US';
+    spreadsheetLocale = 'en-US';
+    let nowDate = new Date();
 
-  let year = Utilities.formatDate(nowDate, spreadsheetTimeZone, "yyyy")
-  let month = Utilities.formatDate(nowDate, spreadsheetTimeZone, "MM")
-  let day = Utilities.formatDate(nowDate, spreadsheetTimeZone, "dd")
+    let year = Utilities.formatDate(nowDate, spreadsheetTimeZone, "yyyy")
+    let month = Utilities.formatDate(nowDate, spreadsheetTimeZone, "MM")
+    let day = Utilities.formatDate(nowDate, spreadsheetTimeZone, "dd")
 
-  var now = Utilities.formatDate(nowDate, spreadsheetTimeZone, "yyyy-MM-dd HH:mm:ss");
-  let nowTime = nowDate.getTime();
+    var now = Utilities.formatDate(nowDate, spreadsheetTimeZone, "yyyy-MM-dd HH:mm:ss");
+    let nowTime = nowDate.getTime();
 
   // The code below gets the values for the column
   // in the active spreadsheet.  Note that this is a JavaScript array.
-  var data = activeSheet.getRange("C:D").getValues();
+  const data = activeSheet.getRange("C:D").getValues();
   const timesAndTides = [];
-  let format = `${year}-${month}-${day} HH:mm:ss`;
+  const format = `${year}-${month}-${day} HH:mm:ss`;
   let lastTime = null;
   let durationMilliseconds;
   Logger.log({'nowTime':(new Date(nowTime)).toString()});
   for (let i = 0; i < data.length; i++) {
-    let eachData = data[i];
-    let targetFormatDate = Utilities.formatDate(eachData[0], spreadsheetTimeZone, format);
-    let targetDate = new Date(targetFormatDate);
+    const eachData = data[i];
+    const targetFormatDate = Utilities.formatDate(eachData[0], spreadsheetTimeZone, format);
+    const targetDate = new Date(targetFormatDate);
     if(targetDate>nowTime){ // If target time is older than last time
-      targetTime = targetDate.getTime();
+      const targetTime = targetDate.getTime();
       durationMilliseconds = targetTime - nowTime;
 
       timesAndTides.push({ delay: durationMilliseconds, info: eachData[1], time: Utilities.formatDate(eachData[0], spreadsheetTimeZone, "HH:mm:ss") });
@@ -97,6 +97,10 @@ function getData() {
   }
   Logger.log(timesAndTides)
   return JSON.stringify(timesAndTides);
+  } catch (error) {
+    Logger.log("Error in getData: " + error.toString());
+    return JSON.stringify([]);
+  }
 }
 
 function getInfoData() {
@@ -104,13 +108,14 @@ function getInfoData() {
 
   Logger.log("getInfoData");
 
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Time&Date");
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Time&Date");
   if (sheet != null) {
-    var data = sheet.getRange("A1").getValues();
-    Logger.log(data)
+    const data = sheet.getRange("A1").getValues();
+    Logger.log(data);
+    return data;
   }
   
-  return data;
+  return null;
 }
 
 function processTimes() {
