@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <!-- Use a templated HTML printing scriptlet to import common stylesheet -->
+    <?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>
+  </head>
+  <body>
+    <!-- Below is the HTML code that defines the sidebar element structure. -->
+    <div class="sidebar branding-below">
+      <div id="sidebar-status"></div>
+    </div>
+
+    <figure>
+        <figcaption>Beep:</figcaption>
+        <audio id="myAudio1"
+            controls
+            src="https://www.timeanddate.com/sfx/beep-6.mp3">
+                Your browser does not support the
+                <code>audio</code> element.
+        </audio>
+    </figure>
+    <figure>
+        <figcaption>Ring:</figcaption>
+        <audio id="myAudio2"
+            controls
+            src="https://www.timeanddate.com/sfx/telephone.mp3">
+                Your browser does not support the
+                <code>audio</code> element.
+        </audio>
+    </figure>
+
+    <button onclick="start(1)" type="button">Start with Beeping</button>
+    <button onclick="start(2)" type="button">Start with Ringing</button>
+
+    <!-- Use a templated HTML printing scriptlet to import JavaScript. -->
+    <?!= HtmlService.createHtmlOutputFromFile('SidebarJavaScript').getContent(); ?>
+  </body>
+</html>

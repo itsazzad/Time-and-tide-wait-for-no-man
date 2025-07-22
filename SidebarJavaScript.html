@@ -1,0 +1,71 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+	/**
+   * Run initializations on sidebar load.
+   */
+
+  var data = [];
+
+  function getDataFromSheet(){
+    // Send the value to the server and handle the response.
+    google.script.run
+        .withSuccessHandler(
+          function(msg, element) {
+            // Respond to success conditions here.
+            console.log("success", msg, element);
+            data = JSON.parse(msg);
+          })
+        .withFailureHandler(
+          function(msg, element) {
+            // Respond to failure conditions here.
+            console.error("failure", msg, element);
+          })
+        .withUserObject(this)
+        .getData();
+  }
+
+  function setAlarm({delay, info, time}){
+    console.log("setAlarm", {delay, info, time});
+    function playAlarm(data) {
+      console.log("playAlarm", data)
+      
+      playAudio(1)
+      playAudio(2)
+      playAudio(1)
+
+      $('#sidebar-status').prepend(`<p>-${JSON.stringify(data)}</p>`);
+
+      google.script.run.withSuccessHandler(function onSuccess(url) {
+        window.open(url);
+      }).withUserObject(this).getInfoData();
+    }
+    console.log(delay, Math.round(delay/1000/60), {delay, info, time});
+    let myGreeting = setTimeout(playAlarm, delay, {delay, info, time});
+  }
+
+  function clearAllTimeouts(){
+    var id = window.setTimeout(function() {}, 0);
+    while (id--) {
+      window.clearTimeout(id); // will do nothing if no timeout with id is present
+    }
+  }
+
+  function playAudio(target) {
+    document.getElementById(`myAudio${target}`).play();
+  }
+
+  function start(target) {
+    console.log("start", target);
+    playAudio(target);
+    getDataFromSheet();
+    for(let i=0; i<data.length; i++){
+      const {delay, info, time} = data[i];
+      console.log("delay", delay);
+      if(delay > 0){
+        setAlarm(data[i]);
+      }
+    }
+    setAlarm({delay: 0, info: "Bismillah!", time: (new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}))});
+  }
+
+</script>
